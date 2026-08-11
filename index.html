@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>official.me</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --hover-bg: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px minmax(500px, 700px) 300px;
+            gap: 30px;
+            max-width: 1300px;
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            padding-top: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            color: var(--text-main);
+        }
+
+        .logo i {
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background-color: var(--hover-bg);
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        /* Right Sidebar Styles */
+        .right-sidebar {
+            padding-top: 20px;
+        }
+
+        .membership-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .membership-card h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .btn-subscribe {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-subscribe:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .perks-list {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .perks-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .perks-list i {
+            color: #22c55e;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding-top: 20px;
+        }
+
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Home Page Styles */
+        .profile-banner {
+            position: relative;
+            height: 250px;
+            border-radius: 12px;
+            background: linear-gradient(to right, #831b1b, #000000);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .profile-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+        }
+
+        .profile-banner-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            color: white;
+        }
+
+        .profile-pic-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid white;
+            background-color: #ddd;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .content-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .post-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+
+        .post-meta h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .post-meta span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .post-text {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .locked-content {
+            background-color: var(--hover-bg);
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .btn-unlock {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .video-duration {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            color: var(--primary-color);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Chat Page Styles */
+        .chat-header h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            color: var(--text-main);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .chat-creator-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-creator-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge-1on1 {
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Profile Page Styles */
+        .profile-header-sm {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-recharge {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .wallet-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .wallet-card i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        .transactions-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .transactions-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .transactions-header i.fa-receipt {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        .transactions-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .transactions-empty .icon-circle {
+            width: 60px;
+            height: 60px;
+            background-color: var(--hover-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+        }
+        
+        .transactions-empty h4 {
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .transactions-empty p {
+            font-size: 13px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .btn-logout {
+            width: 100%;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Auth Page Styles (Hidden by default in sidebar) */
+        .auth-container {
+            max-width: 450px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 20px;
+        }
+        
+        .auth-logo {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        
+        .auth-logo i {
+            color: var(--primary-color);
+        }
+        
+        .auth-subtitle {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .forget-pwd {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .forget-pwd a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .divider::before { margin-right: 10px; }
+        .divider::after { margin-left: 10px; }
+        
+        .btn-google {
+            width: 100%;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .terms-text {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .terms-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* ===== SUBSCRIPTION MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-sheet {
+            background: #f0f1f8;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 24px 24px 0 0;
+            padding: 30px 20px 40px;
+            position: relative;
+            max-height: 95vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to   { transform: translateY(0); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .modal-subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .plan-card.popular {
+            border: 2px solid var(--primary-color);
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -12px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .badge-popular {
+            left: 16px;
+            background: #f59e0b;
+            color: white;
+        }
+
+        .badge-discount {
+            right: 16px;
+            background: #10b981;
+            color: white;
+        }
+
+        .plan-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .plan-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .plan-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ede9fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .plan-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .plan-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .plan-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .btn-join {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-join:hover {
+            background: var(--primary-hover);
+        }
+
+
+        /* Mobile Specific Styles */
+        .mobile-only {
+            display: none;
+        }
+        
+        .desktop-only {
+            display: flex; /* shown on desktop */
+        }
+
+        /* ===== LOGIN MODAL ===== */
+        .login-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: white;
+            z-index: 10000;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .login-modal-overlay.open {
+            display: flex;
+        }
+
+        .login-modal-sheet {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 30px 24px 40px;
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .login-logo {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .login-btn-continue {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 0 0 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .login-divider::before, .login-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .login-divider::before { margin-right: 10px; }
+        .login-divider::after  { margin-left:  10px; }
+
+        .login-btn-google {
+            width: 100%;
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .login-terms {
+            position: absolute;
+            bottom: 24px;
+            left: 0; right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 0 24px;
+        }
+
+        .login-terms a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            padding: 10px 0;
+            z-index: 1000;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .bottom-nav-item i {
+            font-size: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 0;
+                padding-bottom: 60px; /* space for bottom nav */
+            }
+            
+            .sidebar, .right-sidebar {
+                display: none;
+            }
+            
+            .mobile-only {
+                display: block;
+            }
+            
+            .desktop-only {
+                display: none !important;
+            }
+            
+            .bottom-nav {
+                display: flex;
+            }
+            
+            .main-content {
+                padding-top: 0;
+            }
+            
+            /* Banner Adjustments for Mobile */
+            .profile-banner {
+                height: 150px !important;
+                background-size: cover !important;
+                background-position: center top !important;
+                border-radius: 0;
+                padding: 0;
+                position: relative;
+            }
+            
+            .profile-banner > div:first-child {
+                display: none; /* Hide dark gradient overlay on mobile */
+            }
+            
+            .profile-banner-info {
+                position: static !important;
+                bottom: auto;
+                left: auto;
+                display: block !important;
+                color: var(--text-main);
+                padding: 0 15px 15px 15px;
+                background: white;
+            }
+            
+            /* Hide DESKTOP banner info on mobile */
+            .desktop-only {
+                display: none !important;
+            }
+            
+            /* Profile pic sits at bottom edge of banner, overlapping */
+            .banner-profile-pic {
+                width: 90px !important;
+                height: 90px !important;
+                border-radius: 50%;
+                border: 3px solid white !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                margin-top: -45px;
+                display: block;
+                position: relative;
+                z-index: 2;
+            }
+            
+            .profile-banner-info > div {
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .mobile-header-row {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 2px;
+            }
+            
+            .profile-banner-info h2 {
+                color: var(--text-main) !important;
+                text-shadow: none !important;
+                font-size: 20px !important;
+                letter-spacing: 3px !important;
+                margin-bottom: 0 !important;
+                font-weight: 700;
+            }
+            
+            .profile-banner-info p {
+                color: var(--text-main) !important;
+                text-shadow: none !important;
+                font-size: 14px !important;
+            }
+            
+            .profile-banner-info p:first-of-type {
+                color: var(--text-muted) !important;
+                margin-bottom: 10px !important;
+                font-size: 13px !important;
+            }
+            
+            .social-icons-mobile {
+                display: flex !important;
+                position: static !important;
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                gap: 12px !important;
+                align-items: center;
+            }
+            
+            .social-icons-desktop {
+                display: none !important;
+            }
+            
+            .btn-subscribe-mobile {
+                width: 100%;
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 14px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 15px;
+                margin-top: 15px;
+                margin-bottom: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+            }
+            
+            .content-tabs {
+                margin: 0;
+                border-bottom: 1px solid var(--border-color);
+                justify-content: flex-start;
+            }
+            
+            .tab {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .post-card {
+                border-left: none;
+                border-right: none;
+                border-top: none;
+                border-radius: 0;
+                padding: 15px;
+                margin-bottom: 0;
+                border-bottom: 8px solid var(--hover-bg);
+            }
+            
+            .post-text {
+                color: #1d4ed8 !important;
+                font-size: 14px !important;
+                font-weight: 600 !important;
+            }
+            
+            .locked-content {
+                background-color: #f5f5f5;
+                border-radius: 8px;
+                margin-top: 10px;
+            }
+            
+            /* Chat page mobile */
+            .chat-creator-card {
+                margin: 10px 15px 20px;
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 20px;
+                gap: 15px;
+            }
+            
+            .chat-creator-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .chat-header h2 {
+                font-size: 20px;
+                font-weight: 700;
+            }
+            
+            .chat-header p {
+                font-size: 13px;
+                color: var(--text-main);
+            }
+            
+            .wallet-card, .transactions-card {
+                margin: 0 15px 15px;
+            }
+            
+            .profile-header-sm {
+                padding: 15px;
+            }
+            
+            .chat-header {
+                padding: 15px 15px 10px 15px;
+            }
+            
+            .btn-recharge, .btn-logout {
+                margin-left: 15px;
+                width: calc(100% - 30px);
+            }
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-brands fa-envira"></i> fficial.me
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="switchTab('home', this)">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchTab('chat', this)">
+                        <i class="fa-solid fa-comment-dots"></i> Chat
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="desktopProfileNav" onclick="handleProfileClick(this)">
+                        <i class="fa-solid fa-user"></i> Profile
+                    </a>
+                </li>
+                <li class="nav-item" id="desktopAuthNavItem" style="margin-top: 50px;">
+                    <a class="nav-link" id="desktopAuthNav" onclick="openLoginModal(this)">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login / Sign Up
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Home Section -->
+            <section id="home" class="page-section active">
+                <!-- Banner image only (no info inside on mobile) -->
+                <div class="profile-banner" style="background-image: url('https://img.freepik.com/free-photo/red-curtain-with-spotlights_23-2149360555.jpg'); background-size: cover; background-position: center;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);"></div>
+
+                    <!-- Desktop info (inside banner) -->
+                    <div class="desktop-only" style="position: absolute; bottom: 20px; left: 20px; display: flex; align-items: center; gap: 20px; color: white; z-index: 1;">
+                        <img src="https://i.pravatar.cc/150?img=47" alt="Profile" class="profile-pic-large" id="desktopHomeAvatar" onclick="handleAvatarClick()" style="width: 110px; height: 110px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer;">
+                        <div style="flex: 1;">
+                            <div style="margin-bottom: 2px;">
+                                <h2 style="font-size: 28px; font-weight: 700; letter-spacing: 3px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">S O M N A</h2>
+                            </div>
+                            <p style="font-size: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); margin-bottom: 8px;">@rsomna29</p>
+                            <p style="font-size: 15px; max-width: 320px; line-height: 1.5; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">Membership extended for Letest videos 🤩 Hot nude video for individual pric</p>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Social Icons -->
+                    <div class="social-icons-desktop" style="position: absolute; bottom: 20px; right: 20px; background-color: rgba(45, 45, 45, 0.85); padding: 12px 24px; border-radius: 12px; display: flex; gap: 20px; align-items: center; z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        <i class="fa-brands fa-instagram" style="color: #E1306C; font-size: 26px;"></i>
+                        <i class="fa-brands fa-twitter" style="color: #1DA1F2; font-size: 26px;"></i>
+                        <div style="background-color: black; color: #d4ff00; font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 4px; display: flex; align-items: center; justify-content: center; height: 20px;">MY.</div>
+                    </div>
+                </div>
+
+                <!-- Mobile profile info (below banner) -->
+                <div class="profile-banner-info mobile-only" style="padding: 0 15px 0 15px; background: white;">
+                    <!-- Profile pic overlapping banner -->
+                    <img src="https://i.pravatar.cc/150?img=47" alt="Profile" class="banner-profile-pic" id="mobileHomeAvatar" onclick="handleAvatarClick()" style="cursor: pointer;">
+
+                    <div style="margin-top: 10px; width: 100%;">
+                        <!-- Name row with social icons -->
+                        <div class="mobile-header-row">
+                            <h2 style="font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--text-main);">S O M N A</h2>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <i class="fa-brands fa-instagram" style="color: #E1306C; font-size: 20px;"></i>
+                                <i class="fa-brands fa-twitter" style="color: #1DA1F2; font-size: 20px;"></i>
+                                <div style="background-color: black; color: #d4ff00; font-size: 9px; font-weight: 900; padding: 2px 5px; border-radius: 3px; display: flex; align-items: center; height: 16px;">MY.</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">@rsomna29</p>
+                        <p style="font-size: 14px; color: var(--text-main); line-height: 1.5;">Membership extended for Letest videos 🤩 Hot nude video for individual pric</p>
+                        
+                        <!-- Mobile Subscribe Button -->
+                        <button class="btn-subscribe-mobile" onclick="openSubscribeModal()">
+                            <i class="fa-solid fa-star"></i> Subscribe
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-tabs">
+                    <div class="tab active" onclick="filterMedia('all', this)">All</div>
+                    <div class="tab" onclick="filterMedia('photo', this)">Photos</div>
+                    <div class="tab" onclick="filterMedia('video', this)">Videos</div>
+                </div>
+
+                <div id="mediaPostsContainer">
+                    <!-- Dynamic posts rendered here -->
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chat" class="page-section">
+                <div class="chat-header">
+                    <h2>Chat with Creator</h2>
+                    <p>Get quick answers or personalized advice instantly.</p>
+                </div>
+                
+                <div class="chat-creator-card">
+                    <div class="chat-creator-info">
+                        <img src="https://i.pravatar.cc/150?img=47" alt="Profile" class="profile-pic-large" style="width: 50px; height: 50px; border: none;">
+                        <div>
+                            <h3 style="letter-spacing: 2px; font-size: 16px;">S O M N A</h3>
+                            <span style="background-color: #e0e7ff; color: var(--primary-color); font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; display: inline-block; margin-top: 4px;">1:1 Chat</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary">Start Chat</button>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="page-section">
+                <div class="profile-header-sm">
+                    <img id="userProfilePic" src="https://i.pravatar.cc/150?img=47" alt="Profile" class="profile-pic-large" style="width: 60px; height: 60px; border: none; object-fit: cover;">
+                    <div>
+                        <h3 id="userDisplayName" style="letter-spacing: 2px; font-size: 18px;">S O M N A</h3>
+                        <p id="userEmailHandle" style="color: var(--text-muted); font-size: 14px;">@rsomna29</p>
+                    </div>
+                </div>
+                
+                <button class="btn-recharge">
+                    <span><i class="fa-solid fa-bolt" style="margin-right: 10px;"></i> Recharge Account</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                
+                <div class="wallet-card">
+                    <span><i class="fa-solid fa-wallet"></i> Wallet Balance</span>
+                    <span>₹ 0.00</span>
+                </div>
+                
+                <div class="transactions-card">
+                    <div class="transactions-header">
+                        <span><i class="fa-solid fa-receipt"></i> Transactions</span>
+                        <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
+                    </div>
+                    <div class="transactions-empty">
+                        <div class="icon-circle">
+                            <i class="fa-solid fa-wallet" style="color: var(--text-muted);"></i>
+                        </div>
+                        <h4>No Transactions Yet</h4>
+                        <p>Explore top creators and exciting content! Discover, connect, and make the most out of your experience.</p>
+                    </div>
+                </div>
+                
+                <button class="btn-logout" onclick="handleLogout()">
+                    <span><i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 10px;"></i> Logout</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </section>
+
+            <!-- Auth Section -->
+            <section id="auth" class="page-section">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <i class="fa-brands fa-envira"></i> fficial.me
+                    </div>
+                    <h2 class="auth-subtitle">Sign in / Sign up</h2>
+                    
+                    <div class="form-group">
+                        <label>Email address</label>
+                        <input type="email" class="form-control" placeholder="Enter your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="forget-pwd">
+                        <a href="#">Forget password ?</a>
+                    </div>
+                    
+                    <button class="btn-primary">Continue</button>
+                    
+                    <div class="divider">or</div>
+                    
+                    <button class="btn-google">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 16px;">
+                        Sign in with Google
+                    </button>
+                    
+                    <p class="terms-text">
+                        By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <div class="membership-card">
+                <h3>Channel Membership</h3>
+                <button class="btn-subscribe" onclick="openSubscribeModal()">
+                    <i class="fa-solid fa-star"></i> Subscribe
+                </button>
+                <ul class="perks-list">
+                    <li><i class="fa-solid fa-check"></i> Exclusive behind-the-scenes content</li>
+                    <li><i class="fa-solid fa-check"></i> Early access to ticket sales</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a class="bottom-nav-item active" onclick="switchTab('home', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a class="bottom-nav-item" onclick="switchTab('chat', this)">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Chat</span>
+        </a>
+        <a class="bottom-nav-item" id="profileNavBtn" onclick="handleProfileClick(this)">
+            <i class="fa-solid fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <!-- Subscribe Modal -->
+    <div class="modal-overlay" id="subscribeModal" onclick="closeOnOverlay(event)">
+        <div class="modal-sheet">
+            <button class="modal-close" onclick="closeSubscribeModal()">&#x2715;</button>
+            <h2 class="modal-title">Choose Your Plan</h2>
+            <p class="modal-subtitle">Select the perfect plan for your needs</p>
+
+            <!-- 1 Month -->
+            <div class="plan-card">
+                <div class="plan-top">
+                    <div class="plan-left">
+                        <div class="plan-icon">🚀</div>
+                        <span class="plan-name">1 Month</span>
+                    </div>
+                    <span class="plan-price">₹ 10000</span>
+                </div>
+                <p class="plan-desc">In this pack user can see your premium content for a month</p>
+                <button class="btn-join">JOIN NOW</button>
+            </div>
+
+            <!-- 3 Months -->
+            <div class="plan-card popular">
+                <span class="plan-badge badge-popular">Popular</span>
+                <span class="plan-badge badge-discount">10% Discount</span>
+                <div class="plan-top" style="margin-top: 10px;">
+                    <div class="plan-left">
+                        <div class="plan-icon">⭐</div>
+                        <span class="plan-name">3 Months</span>
+                    </div>
+                    <span class="plan-price">₹ 27000</span>
+                </div>
+                <p class="plan-desc">In this pack user can see your premium content for three months</p>
+                <button class="btn-join">JOIN NOW</button>
+            </div>
+
+            <!-- 6 Months -->
+            <div class="plan-card">
+                <span class="plan-badge badge-discount">20% Discount</span>
+                <div class="plan-top" style="margin-top: 10px;">
+                    <div class="plan-left">
+                        <div class="plan-icon">👑</div>
+                        <span class="plan-name">6 Months</span>
+                    </div>
+                    <span class="plan-price">₹ 48000</span>
+                </div>
+                <p class="plan-desc">In this pack user can see your premium content for six months</p>
+                <button class="btn-join">JOIN NOW</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal-overlay" id="loginModal">
+        <div class="login-modal-sheet">
+            <!-- Close Button -->
+            <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+
+            <!-- Logo -->
+            <div class="login-logo">
+                <i class="fa-brands fa-envira" style="color: var(--primary-color);"></i>fficial.me
+            </div>
+            <p class="login-subtitle">Sign in / Sign up</p>
+
+            <!-- Form -->
+            <div class="login-form-group">
+                <label>Full Name (Optional)</label>
+                <input type="text" id="modalNameInput" class="login-input" placeholder="Enter your name">
+            </div>
+            <div class="login-form-group">
+                <label>Email address</label>
+                <input type="email" id="modalEmailInput" class="login-input" placeholder="Enter your email address">
+            </div>
+            <div class="login-form-group">
+                <label>Password</label>
+                <input type="password" id="modalPasswordInput" class="login-input" placeholder="Enter your password">
+            </div>
+            <div id="modalAuthError" style="color: #ef4444; font-size: 13px; margin-bottom: 12px; display: none;"></div>
+            <div style="text-align: right; margin-bottom: 20px;">
+                <a href="#" style="color: var(--primary-color); font-size: 14px; text-decoration: none;">Forget password ?</a>
+            </div>
+            <button class="login-btn-continue" id="modalContinueBtn" onclick="handleEmailAuth()">Continue</button>
+
+            <div class="login-divider">or</div>
+
+            <button class="login-btn-google" onclick="handleGoogleAuth()">
+                <img src="https://www.google.com/favicon.ico" alt="G" style="width: 18px;">
+                Sign in with Google
+            </button>
+
+            <!-- Terms -->
+            <p class="login-terms">
+                By signing in, you agree to our
+                <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Admin Passcode Modal -->
+    <div class="modal-overlay" id="adminPassModal">
+        <div class="modal-sheet" style="max-width: 400px; border-radius: 16px; padding: 25px; background: white; margin: auto;">
+            <h3 style="margin-bottom: 15px; text-align: center;">Admin Verification</h3>
+            <input type="password" id="adminPassInput" class="login-input" placeholder="Enter Admin Password" style="margin-bottom: 15px;">
+            <div id="adminPassErr" style="color: red; font-size: 12px; margin-bottom: 10px; display: none;">Invalid Password</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="login-btn-continue" onclick="verifyAdminPass()" style="margin: 0;">Submit</button>
+                <button class="login-btn-continue" onclick="closeAdminPassModal()" style="margin: 0; background: #64748b;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal-overlay" id="adminPanelModal">
+        <div class="modal-sheet" style="max-width: 600px; border-radius: 16px; padding: 25px; background: white; margin: auto; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Admin Control Panel</h3>
+                <button onclick="closeAdminPanelModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+            </div>
+
+            <!-- Tab Headers -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <button class="btn-primary" onclick="showAdminTab('settings')" style="padding: 8px 12px; width: auto; font-size: 13px;">Banner & Profile Pic</button>
+                <button class="btn-primary" onclick="showAdminTab('uploads')" style="padding: 8px 12px; width: auto; font-size: 13px; background: #475569;">Uploads</button>
+                <button class="btn-primary" onclick="showAdminTab('requests')" style="padding: 8px 12px; width: auto; font-size: 13px; background: #0f172a;">Unlock Requests</button>
+            </div>
+
+            <!-- Tab 1: Settings -->
+            <div id="adminTabSettings">
+                <h4 style="margin-bottom: 10px;">Update Site Assets</h4>
+                <div class="login-form-group">
+                    <label>Select Target</label>
+                    <select id="assetTypeSelect" class="login-input">
+                        <option value="profilePic">Profile Picture</option>
+                        <option value="bannerPic">Home Banner</option>
+                    </select>
+                </div>
+                <div class="login-form-group">
+                    <label>Select Image File</label>
+                    <input type="file" id="assetFileInput" class="login-input" accept="image/*">
+                </div>
+                <button class="btn-primary" onclick="uploadSiteAsset()">Upload Asset to Cloudinary</button>
+            </div>
+
+            <!-- Tab 2: Uploads -->
+            <div id="adminTabUploads" style="display: none;">
+                <h4 style="margin-bottom: 10px;">Upload New Post</h4>
+                <div class="login-form-group">
+                    <label>Content Type</label>
+                    <select id="uploadTypeSelect" class="login-input">
+                        <option value="video">Video</option>
+                        <option value="photo">Photo</option>
+                    </select>
+                </div>
+                <div class="login-form-group">
+                    <label>Select Media File</label>
+                    <input type="file" id="uploadFileInput" class="login-input" accept="image/*,video/*">
+                </div>
+                <div class="login-form-group">
+                    <label>Title</label>
+                    <input type="text" id="uploadTitleInput" class="login-input" placeholder="Post Title / Caption">
+                </div>
+                <div class="login-form-group">
+                    <label>Premium Cost (₹)</label>
+                    <input type="number" id="uploadCostInput" class="login-input" placeholder="Cost in INR (e.g. 1100)">
+                </div>
+                <button class="btn-primary" onclick="uploadPostMedia()">Upload Content to Cloudinary</button>
+            </div>
+
+            <!-- Tab 3: Requests -->
+            <div id="adminTabRequests" style="display: none;">
+                <h4 style="margin-bottom: 10px;">Unlock Requests</h4>
+                <div id="adminRequestsList">
+                    <!-- Dynamic unlock requests -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unlock Payment Modal -->
+    <div class="modal-overlay" id="unlockPaymentModal">
+        <div class="modal-sheet" style="max-width: 450px; border-radius: 16px; padding: 25px; background: white; margin: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>Scan & Pay to Unlock</h3>
+                <button onclick="closeUnlockPaymentModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="qr.png" alt="Scan QR" style="width: 180px; height: 180px; border: 1px solid #e2e8f0; border-radius: 8px;" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay';">
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">Scan with any UPI App to Pay</p>
+                <h4 id="paymentAmountText" style="color: var(--primary-color); margin-top: 5px;">Amount: ₹ 0</h4>
+            </div>
+
+            <div class="login-form-group">
+                <label>UPI ID used for payment</label>
+                <input type="text" id="paymentUpiInput" class="login-input" placeholder="e.g. user@upi">
+            </div>
+            <div class="login-form-group">
+                <label>Transaction / UTR Reference No.</label>
+                <input type="text" id="paymentUtrInput" class="login-input" placeholder="12 Digit UTR Number">
+            </div>
+            <button class="btn-primary" onclick="submitUnlockRequest()">Submit Payment Details</button>
+        </div>
+    </div>
+
+    <script>
+        // Cloudinary Config
+        const CLOUDINARY_CLOUD_NAME = "diavzcw31";
+        const CLOUDINARY_UPLOAD_PRESET = "ml_default";
+
+        // Initial Sample Data in LocalStorage if empty
+        if (!localStorage.getItem('app_posts')) {
+            const initialPosts = [
+                {
+                    id: 'post_1',
+                    type: 'video',
+                    title: "My neighbor's brother had bad intentions towards me.",
+                    cost: 1100,
+                    duration: '11:13',
+                    url: 'https://res.cloudinary.com/demo/video/upload/elephants.mp4',
+                    timestamp: '3 months ago'
+                }
+            ];
+            localStorage.setItem('app_posts', JSON.stringify(initialPosts));
+        }
+
+        if (!localStorage.getItem('app_requests')) {
+            localStorage.setItem('app_requests', JSON.stringify([]));
+        }
+
+        if (!localStorage.getItem('app_unlocked_posts')) {
+            localStorage.setItem('app_unlocked_posts', JSON.stringify({}));
+        }
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBLVJL0BDkg445j_cg0V6YvdCqfvIuxCxk",
+            authDomain: "private-content-19f45.firebaseapp.com",
+            projectId: "private-content-19f45",
+            storageBucket: "private-content-19f45.firebasestorage.app",
+            messagingSenderId: "465068841167",
+            appId: "1:465068841167:web:21002bd5b129215010bfba"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let avatarClickCount = 0;
+        let avatarClickTimer = null;
+        let currentFilter = 'all';
+        let pendingUnlockPostId = null;
+
+        // Auth state listener
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            const userProfilePic = document.getElementById('userProfilePic');
+            const userDisplayName = document.getElementById('userDisplayName');
+            const userEmailHandle = document.getElementById('userEmailHandle');
+            const desktopAuthNavItem = document.getElementById('desktopAuthNavItem');
+
+            if (user) {
+                const name = user.displayName || user.email.split('@')[0];
+                userDisplayName.textContent = name;
+                userEmailHandle.textContent = `@${user.email.split('@')[0]}`;
+                
+                if (user.photoURL) {
+                    userProfilePic.src = user.photoURL;
+                } else {
+                    // Avatar logic: first letter of name
+                    const firstLetter = name.charAt(0).toUpperCase();
+                    userProfilePic.src = `https://ui-avatars.com/api/?name=${firstLetter}&background=6366f1&color=fff&size=150`;
+                }
+
+                if (desktopAuthNavItem) desktopAuthNavItem.style.display = 'none';
+            } else {
+                userDisplayName.textContent = "Guest User";
+                userEmailHandle.textContent = "@guest";
+                userProfilePic.src = "https://i.pravatar.cc/150?img=47";
+                if (desktopAuthNavItem) desktopAuthNavItem.style.display = 'block';
+            }
+
+            renderPosts();
+            renderUserTransactions();
+        });
+
+        // Secret 12 clicks on Home Avatar -> Admin Passcode Modal
+        function handleAvatarClick() {
+            avatarClickCount++;
+            clearTimeout(avatarClickTimer);
+            avatarClickTimer = setTimeout(() => {
+                avatarClickCount = 0;
+            }, 3000);
+
+            if (avatarClickCount >= 12) {
+                avatarClickCount = 0;
+                document.getElementById('adminPassModal').classList.add('open');
+            }
+        }
+
+        function closeAdminPassModal() {
+            document.getElementById('adminPassModal').classList.remove('open');
+            document.getElementById('adminPassErr').style.display = 'none';
+            document.getElementById('adminPassInput').value = '';
+        }
+
+        function verifyAdminPass() {
+            const pass = document.getElementById('adminPassInput').value;
+            if (pass === 'private123') {
+                closeAdminPassModal();
+                openAdminPanelModal();
+            } else {
+                document.getElementById('adminPassErr').style.display = 'block';
+            }
+        }
+
+        function openAdminPanelModal() {
+            document.getElementById('adminPanelModal').classList.add('open');
+            renderAdminRequests();
+        }
+
+        function closeAdminPanelModal() {
+            document.getElementById('adminPanelModal').classList.remove('open');
+        }
+
+        function showAdminTab(tabName) {
+            document.getElementById('adminTabSettings').style.display = tabName === 'settings' ? 'block' : 'none';
+            document.getElementById('adminTabUploads').style.display = tabName === 'uploads' ? 'block' : 'none';
+            document.getElementById('adminTabRequests').style.display = tabName === 'requests' ? 'block' : 'none';
+            if (tabName === 'requests') renderAdminRequests();
+        }
+
+        // Upload Helper to Cloudinary
+        async function uploadToCloudinary(file, resourceType = 'auto') {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Cloudinary Upload Failed');
+            }
+
+            const data = await response.json();
+            return data.secure_url;
+        }
+
+        async function uploadSiteAsset() {
+            const fileInput = document.getElementById('assetFileInput');
+            const targetType = document.getElementById('assetTypeSelect').value;
+            if (!fileInput.files[0]) return alert('Please select a file');
+
+            try {
+                const file = fileInput.files[0];
+                const url = await uploadToCloudinary(file, 'image');
+                if (targetType === 'profilePic') {
+                    document.querySelectorAll('.profile-pic-large, .banner-profile-pic').forEach(img => img.src = url);
+                    localStorage.setItem('site_profile_pic', url);
+                } else if (targetType === 'bannerPic') {
+                    document.querySelectorAll('.profile-banner').forEach(b => b.style.backgroundImage = `url('${url}')`);
+                    localStorage.setItem('site_banner_pic', url);
+                }
+                alert('Uploaded and Updated successfully!');
+            } catch (err) {
+                alert('Upload Error: ' + err.message);
+            }
+        }
+
+        async function uploadPostMedia() {
+            const type = document.getElementById('uploadTypeSelect').value;
+            const fileInput = document.getElementById('uploadFileInput');
+            const title = document.getElementById('uploadTitleInput').value.trim();
+            const cost = parseInt(document.getElementById('uploadCostInput').value) || 0;
+
+            if (!fileInput.files[0] || !title) return alert('Please select file and title');
+
+            try {
+                const file = fileInput.files[0];
+                const url = await uploadToCloudinary(file, type === 'video' ? 'video' : 'image');
+
+                const posts = JSON.parse(localStorage.getItem('app_posts')) || [];
+                const newPost = {
+                    id: 'post_' + Date.now(),
+                    type: type,
+                    title: title,
+                    cost: cost,
+                    url: url,
+                    timestamp: 'Just now'
+                };
+                posts.unshift(newPost);
+                localStorage.setItem('app_posts', JSON.stringify(posts));
+
+                alert('New Post Uploaded Successfully!');
+                document.getElementById('uploadTitleInput').value = '';
+                document.getElementById('uploadCostInput').value = '';
+                fileInput.value = '';
+                renderPosts();
+            } catch (err) {
+                alert('Upload Error: ' + err.message);
+            }
+        }
+
+        // Render Media Posts with Filter and Blur logic
+        function renderPosts() {
+            const container = document.getElementById('mediaPostsContainer');
+            if (!container) return;
+
+            const posts = JSON.parse(localStorage.getItem('app_posts')) || [];
+            const unlockedPosts = JSON.parse(localStorage.getItem('app_unlocked_posts')) || {};
+            const userUnlocked = currentUser ? (unlockedPosts[currentUser.uid] || []) : [];
+
+            const filtered = posts.filter(p => {
+                if (currentFilter === 'photo') return p.type === 'photo';
+                if (currentFilter === 'video') return p.type === 'video';
+                return true;
+            });
+
+            container.innerHTML = filtered.map(p => {
+                const isUnlocked = userUnlocked.includes(p.id);
+
+                let mediaContent = '';
+                if (isUnlocked) {
+                    if (p.type === 'video') {
+                        mediaContent = `<video controls style="width:100%; max-height:350px; border-radius:12px;" src="${p.url}"></video>`;
+                    } else {
+                        mediaContent = `<img style="width:100%; max-height:400px; object-fit:cover; border-radius:12px;" src="${p.url}" />`;
+                    }
+                } else {
+                    mediaContent = `
+                        <div class="locked-content" style="position:relative; min-height: 250px; overflow:hidden;">
+                            <div style="position:absolute; width:100%; height:100%; background: rgba(240,240,240,0.85); backdrop-filter: blur(14px); border-radius:12px; top:0; left:0; z-index:1;"></div>
+                            <button class="btn-unlock" onclick="handleUnlockClick('${p.id}', ${p.cost})" style="position:relative; z-index:2; margin: auto;">
+                                <i class="fa-solid fa-lock"></i> Unlock for ₹ ${p.cost}
+                            </button>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <img src="${localStorage.getItem('site_profile_pic') || 'https://i.pravatar.cc/150?img=47'}" alt="Avatar" class="post-avatar">
+                            <div class="post-meta">
+                                <h4>rsomna29</h4>
+                                <span>${p.timestamp || 'Recently'}</span>
+                            </div>
+                        </div>
+                        <p class="post-text">${p.title}</p>
+                        ${mediaContent}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterMedia(filter, element) {
+            currentFilter = filter;
+            document.querySelectorAll('.content-tabs .tab').forEach(t => t.classList.remove('active'));
+            if (element) element.classList.add('active');
+            renderPosts();
+        }
+
+        // Unlock logic
+        function handleUnlockClick(postId, cost) {
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+
+            pendingUnlockPostId = postId;
+            document.getElementById('paymentAmountText').textContent = `Amount: ₹ ${cost}`;
+            document.getElementById('unlockPaymentModal').classList.add('open');
+        }
+
+        function closeUnlockPaymentModal() {
+            document.getElementById('unlockPaymentModal').classList.remove('open');
+        }
+
+        function submitUnlockRequest() {
+            const upi = document.getElementById('paymentUpiInput').value.trim();
+            const utr = document.getElementById('paymentUtrInput').value.trim();
+
+            if (!upi || !utr) return alert('Please enter both UPI ID and UTR Number');
+
+            const requests = JSON.parse(localStorage.getItem('app_requests')) || [];
+            const newReq = {
+                id: 'req_' + Date.now(),
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUser.displayName || currentUser.email,
+                postId: pendingUnlockPostId,
+                upi: upi,
+                utr: utr,
+                status: 'pending',
+                date: new Date().toLocaleDateString()
+            };
+            requests.unshift(newReq);
+            localStorage.setItem('app_requests', JSON.stringify(requests));
+
+            alert('Unlock request submitted! Pending admin approval.');
+            closeUnlockPaymentModal();
+            renderUserTransactions();
+        }
+
+        function renderUserTransactions() {
+            const list = document.getElementById('transactionsList');
+            if (!list) return;
+
+            if (!currentUser) {
+                list.innerHTML = `<p style="padding: 20px; color: var(--text-muted);">Please log in to view transactions.</p>`;
+                return;
+            }
+
+            const requests = JSON.parse(localStorage.getItem('app_requests')) || [];
+            const userReqs = requests.filter(r => r.userId === currentUser.uid);
+
+            if (userReqs.length === 0) {
+                list.innerHTML = `
+                    <div class="icon-circle">
+                        <i class="fa-solid fa-wallet" style="color: var(--text-muted);"></i>
+                    </div>
+                    <h4>No Transactions Yet</h4>
+                    <p>Explore top creators and exciting content!</p>
+                `;
+                return;
+            }
+
+            list.innerHTML = userReqs.map(r => `
+                <div style="padding: 12px 15px; border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:13px; text-align:left;">
+                    <div>
+                        <strong>Post Unlock Request</strong><br/>
+                        <span style="color: var(--text-muted);">UTR: ${r.utr}</span>
+                    </div>
+                    <span style="padding: 4px 8px; border-radius: 4px; font-weight:600; text-transform:capitalize; background: ${r.status === 'accepted' ? '#dcfce7' : r.status === 'rejected' ? '#fee2e2' : '#fef9c3'}; color: ${r.status === 'accepted' ? '#15803d' : r.status === 'rejected' ? '#b91c1c' : '#a16207'};">
+                        ${r.status}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminRequests() {
+            const container = document.getElementById('adminRequestsList');
+            if (!container) return;
+
+            const requests = JSON.parse(localStorage.getItem('app_requests')) || [];
+
+            if (requests.length === 0) {
+                container.innerHTML = `<p>No pending requests.</p>`;
+                return;
+            }
+
+            container.innerHTML = requests.map(r => `
+                <div style="border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                    <p><strong>User:</strong> ${r.userName} (${r.userEmail})</p>
+                    <p><strong>UPI:</strong> ${r.upi} | <strong>UTR:</strong> ${r.utr}</p>
+                    <p><strong>Status:</strong> ${r.status}</p>
+                    ${r.status === 'pending' ? `
+                        <div style="margin-top: 8px; display:flex; gap:10px;">
+                            <button onclick="updateRequestStatus('${r.id}', 'accepted')" style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Accept</button>
+                            <button onclick="updateRequestStatus('${r.id}', 'rejected')" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Reject</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateRequestStatus(reqId, status) {
+            const requests = JSON.parse(localStorage.getItem('app_requests')) || [];
+            const reqIndex = requests.findIndex(r => r.id === reqId);
+            if (reqIndex !== -1) {
+                requests[reqIndex].status = status;
+                localStorage.setItem('app_requests', JSON.stringify(requests));
+
+                if (status === 'accepted') {
+                    const req = requests[reqIndex];
+                    const unlockedPosts = JSON.parse(localStorage.getItem('app_unlocked_posts')) || {};
+                    if (!unlockedPosts[req.userId]) unlockedPosts[req.userId] = [];
+                    if (!unlockedPosts[req.userId].includes(req.postId)) {
+                        unlockedPosts[req.userId].push(req.postId);
+                    }
+                    localStorage.setItem('app_unlocked_posts', JSON.stringify(unlockedPosts));
+                }
+
+                renderAdminRequests();
+                renderPosts();
+            }
+        }
+
+        function handleProfileClick(element) {
+            if (currentUser) {
+                switchTab('profile', element);
+            } else {
+                openLoginModal(element);
+            }
+        }
+
+        function openLoginModal(element) {
+            document.getElementById('loginModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(l => l.classList.remove('active'));
+            if (element) element.classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('open');
+            document.body.style.overflow = '';
+            document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-link.active, .bottom-nav-item.active') || document.querySelector("a[onclick*='home']").classList.add('active');
+        }
+
+        async function handleEmailAuth() {
+            const email = document.getElementById('modalEmailInput').value.trim();
+            const password = document.getElementById('modalPasswordInput').value.trim();
+            const name = document.getElementById('modalNameInput').value.trim();
+            const errorDiv = document.getElementById('modalAuthError');
+            errorDiv.style.display = 'none';
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Please enter both email and password.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (signInErr) {
+                    if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential') {
+                        const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                        if (name && userCred.user) {
+                            await userCred.user.updateProfile({ displayName: name });
+                        }
+                    } else {
+                        throw signInErr;
+                    }
+                }
+
+                closeLoginModal();
+                const profileNavBtn = document.getElementById('profileNavBtn') || document.getElementById('desktopProfileNav');
+                switchTab('profile', profileNavBtn);
+            } catch (err) {
+                errorDiv.textContent = err.message || 'Authentication failed.';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function handleGoogleAuth() {
+            const errorDiv = document.getElementById('modalAuthError');
+            errorDiv.style.display = 'none';
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                await auth.signInWithPopup(provider);
+                closeLoginModal();
+                const profileNavBtn = document.getElementById('profileNavBtn') || document.getElementById('desktopProfileNav');
+                switchTab('profile', profileNavBtn);
+            } catch (err) {
+                errorDiv.textContent = err.message || 'Google Sign-In failed.';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await auth.signOut();
+                const homeNavBtn = document.querySelector("a[onclick*='home']");
+                switchTab('home', homeNavBtn);
+            } catch (err) {
+                console.error('Logout error:', err);
+            }
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            }
+        }
+
+        function openSubscribeModal() {
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            document.getElementById('subscribeModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSubscribeModal() {
+            document.getElementById('subscribeModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeOnOverlay(event) {
+            if (event.target === document.getElementById('subscribeModal')) {
+                closeSubscribeModal();
+            }
+        }
+
+        // Apply saved custom site assets on load
+        if (localStorage.getItem('site_profile_pic')) {
+            document.querySelectorAll('.profile-pic-large, .banner-profile-pic').forEach(img => img.src = localStorage.getItem('site_profile_pic'));
+        }
+        if (localStorage.getItem('site_banner_pic')) {
+            document.querySelectorAll('.profile-banner').forEach(b => b.style.backgroundImage = `url('${localStorage.getItem('site_banner_pic')}')`);
+        }
+    </script>
+</body>
+</html>
